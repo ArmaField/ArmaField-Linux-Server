@@ -1,0 +1,22 @@
+# Local user config
+.env
+config.json
+
+# Persistent data
+profile/
+workshop/
+!profile/.gitkeep
+!workshop/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store

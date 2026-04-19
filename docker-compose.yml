@@ -1,0 +1,22 @@
+services:
+  armafield:
+    build: .
+    image: armafield-linux-server:latest
+    container_name: armafield-server
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${GAME_PORT:-2001}:${GAME_PORT:-2001}/udp"
+      - "${A2S_PORT:-17777}:${A2S_PORT:-17777}/udp"
+      - "${RCON_PORT:-19999}:${RCON_PORT:-19999}/udp"
+    volumes:
+      - ./config.json:/runtime/config.json:ro
+      - ./profile:/profile
+      - ./workshop:/workshop
+      - reforger-data:/reforger
+    stop_grace_period: 30s
+    stop_signal: SIGINT
+
+volumes:
+  reforger-data:

@@ -1,0 +1,20 @@
+# Keep Docker build context small
+.git/
+.gitignore
+docs/
+tests/
+.env
+.env.example
+config.json
+profile/
+workshop/
+*.md
+LICENSE
+.vscode/
+.idea/
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+requirements-dev.txt
+pytest.ini

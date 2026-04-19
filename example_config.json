@@ -1,0 +1,56 @@
+{
+    "bindAddress": "0.0.0.0",
+    "bindPort": 2001,
+    "publicAddress": "",
+    "publicPort": 2001,
+    "a2s": {
+        "address": "0.0.0.0",
+        "port": 17777
+    },
+    "rcon": {
+        "address": "0.0.0.0",
+        "port": 19999,
+        "password": "CHANGEME_no_spaces",
+        "permission": "monitor",
+        "blacklist": [],
+        "whitelist": []
+    },
+    "game": {
+        "name": "ArmaField Server",
+        "password": "",
+        "passwordAdmin": "CHANGEME",
+        "admins": [],
+        "scenarioId": "{1FB87580B53C498D}Missions/AF_Arland_Airport.conf",
+        "maxPlayers": 64,
+        "visible": true,
+        "crossPlatform": false,
+        "supportedPlatforms": [
+            "PLATFORM_PC"
+        ],
+        "gameProperties": {
+            "serverMaxViewDistance": 2500,
+            "serverMinGrassDistance": 50,
+            "networkViewDistance": 1000,
+            "disableThirdPerson": true,
+            "fastValidation": true,
+            "battlEye": true,
+            "VONDisableUI": true,
+            "VONDisableDirectSpeechUI": true
+        },
+        "mods": [
+            {
+                "modId": "68FA258A6C74CE73",
+                "name": "ArmaField"
+            }
+        ]
+    },
+    "operating": {
+        "lobbyPlayerSynchronise": true,
+        "joinQueue": {
+            "maxSize": 50
+        },
+        "disableNavmeshStreaming": [
+            "Soldiers"
+        ]
+    }
+}
