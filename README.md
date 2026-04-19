@@ -44,6 +44,10 @@ docker compose logs -f
 The first launch downloads ~10 GB of game files via SteamCMD - expect
 5-10 minutes before the server is ready.
 
+> **ArmaField mod backend:** for anything beyond local testing, set your
+> `ServerToken` and `BackendURL` in `profile/ArmaField/Systems/BackendSettings.json`
+> - see [ArmaField mod: backend configuration](#armafield-mod-backend-configuration).
+
 **Before opening the server to players, make sure your chosen UDP ports are open at every layer:**
 
 1. **Host firewall** (UFW / firewalld / iptables) - see [Firewall](#firewall) below.
@@ -140,6 +144,54 @@ server.
 If `MapSeeding.json` is missing (first launch) or invalid, the container
 falls back to the `scenarioId` set in your `config.json` - so your initial
 `config.json` value is effectively the starting mission.
+
+## ArmaField mod: backend configuration
+
+The ArmaField mod connects to an ArmaField backend for match statistics, player
+identity, and other cross-server features. The mod reads its backend settings
+from `profile/ArmaField/Systems/BackendSettings.json`.
+
+Create (or edit) this file **before** starting the server:
+
+```bash
+mkdir -p profile/ArmaField/Systems
+nano profile/ArmaField/Systems/BackendSettings.json
+```
+
+File content:
+
+```json
+{
+    "ServerToken": "YOUR-SERVER-TOKEN",
+    "BackendURL": "https://your.backend.url"
+}
+```
+
+> **`BackendURL` MUST be HTTPS with a valid SSL certificate.** Arma Reforger
+> rejects plain HTTP outright - `http://...` URLs will not work even for local
+> testing. If you self-host the backend, put it behind a reverse proxy with a
+> Let's Encrypt cert (Caddy, Traefik, Nginx + Certbot - any of them) before
+> pointing the mod at it.
+
+**Defaults** (test backend - use only for local development or testing, not for public play):
+
+```json
+{
+    "ServerToken": "ARMAFIELD-TEST-TOKEN",
+    "BackendURL": "https://test.armafield.gg"
+}
+```
+
+For production you must **self-host the backend** - there is no free public
+backend to connect to. The open-source backend can be found at [ArmaField BackEnd Repository](https://github.com/ArmaField/ArmaField-BackEnd).
+
+**Without a reachable backend the ArmaField mod does not function at all** -
+the spawn menu may fail to open and players will not be able to spawn into the
+match. A working HTTPS backend with a valid `ServerToken` is a hard requirement
+for the mod to run, not an optional add-on for stats.
+
+Since `profile/` is a bind-mounted volume, the file persists between container
+rebuilds - you only need to set it up once per host.
 
 ## Update policy
 
