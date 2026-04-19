@@ -152,11 +152,14 @@ def should_validate(
 ) -> bool:
     if skip_install:
         return False
-    if not binary.exists():
-        return True
-    if not marker.exists():
-        return True
+    # Wrap all filesystem calls: on Python <3.12, Path.exists() propagates
+    # OSError from stat() rather than returning False. Any fs weirdness →
+    # safer to validate.
     try:
+        if not binary.exists():
+            return True
+        if not marker.exists():
+            return True
         last = datetime.fromtimestamp(marker.stat().st_mtime)
         if datetime.now() - last > interval:
             return True
