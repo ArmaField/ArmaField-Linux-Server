@@ -11,7 +11,9 @@ from pathlib import Path
 from typing import Mapping
 
 USER_CONFIG_PATH = Path("/runtime/config.json")
-MAP_SEEDING_PATH = Path("/profile/ArmaField/Systems/MapSeeding.json")
+# ArmaReforgerServer creates a 'profile/' subdirectory inside the -profile path,
+# so the mod's files land at /profile/profile/... not /profile/...
+MAP_SEEDING_PATH = Path("/profile/profile/ArmaField/Systems/MapSeeding.json")
 RUNTIME_CONFIG_PATH = Path(os.environ.get("RUNTIME_CONFIG", "/tmp/runtime_config.json"))
 GAME_BINARY_PATH = Path("/reforger/ArmaReforgerServer")
 STEAMCMD_MARKER_PATH = Path("/var/lib/armafield/steamcmd.marker")

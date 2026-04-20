@@ -45,8 +45,10 @@ The first launch downloads ~10 GB of game files via SteamCMD - expect
 5-10 minutes before the server is ready.
 
 > **ArmaField mod backend:** for anything beyond local testing, set your
-> `ServerToken` and `BackendURL` in `profile/ArmaField/Systems/BackendSettings.json`
+> `ServerToken` and `BackendURL` in `profile/profile/ArmaField/Systems/BackendSettings.json`
 > - see [ArmaField mod: backend configuration](#armafield-mod-backend-configuration).
+> Note the **double `profile/`** - ArmaReforgerServer creates a `profile/` subdirectory
+> inside the profile path we give it, so the mod's files land one level deeper than you might expect.
 
 **Before opening the server to players, make sure your chosen UDP ports are open at every layer:**
 
@@ -127,7 +129,7 @@ panels.
 ## MapSeeding: how the mod rotation works
 
 After each mission, the ArmaField mod writes the next mission's scenario ID
-to `profile/ArmaField/Systems/MapSeeding.json`:
+to `profile/profile/ArmaField/Systems/MapSeeding.json`:
 
 ```json
 {
@@ -149,13 +151,18 @@ falls back to the `scenarioId` set in your `config.json` - so your initial
 
 The ArmaField mod connects to an ArmaField backend for match statistics, player
 identity, and other cross-server features. The mod reads its backend settings
-from `profile/ArmaField/Systems/BackendSettings.json`.
+from `profile/profile/ArmaField/Systems/BackendSettings.json`.
+
+> **Why the double `profile/`?** ArmaReforgerServer creates a `profile/`
+> subdirectory inside whatever directory we pass via `-profile`, so the mod's
+> files land at `profile/profile/ArmaField/Systems/` on the host - right next
+> to `MapSeeding.json` written by the mod between missions.
 
 Create (or edit) this file **before** starting the server:
 
 ```bash
-mkdir -p profile/ArmaField/Systems
-nano profile/ArmaField/Systems/BackendSettings.json
+mkdir -p profile/profile/ArmaField/Systems
+nano profile/profile/ArmaField/Systems/BackendSettings.json
 ```
 
 File content:
@@ -248,4 +255,4 @@ docker build -t armafield-linux-server:dev .
 
 ## License
 
-[MIT](LICENSE)
+[MIT](./LICENSE) © ARMAFIELD
