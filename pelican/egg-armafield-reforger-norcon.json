@@ -7,7 +7,7 @@
     "exported_at": "2026-04-19T00:00:00+00:00",
     "name": "Arma Reforger - ArmaField (no RCON)",
     "author": "contact@armafield.gg",
-    "uuid": "f1e7b842-3a59-4d6e-9c1b-2d8a4f8e5b62",
+    "uuid": "6f205296-631c-42a3-b751-90cf7929c35b",
     "description": "Arma Reforger Dedicated Server with the ArmaField mod and automatic mission rotation via the mod's MapSeeding.json. This variant has the rcon section completely omitted from config.json (no rcon block at all, not even empty fields).\n\nBackend: defaults point at the public test backend (https://test.armafield.gg). Use the Backend Token and Backend URL panel variables to point at your own self-hosted backend (https://github.com/ArmaField/ArmaField-BackEnd) for production play. URL must be https:// - Arma Reforger rejects plain http.",
     "tags": [
         "steamcmd",
