@@ -1,14 +1,14 @@
 {
-    "_comment": "ArmaField MapSeeding-aware Arma Reforger egg. Based on pelican-eggs/games-steamcmd Arma Reforger egg by red_thirten. Adds: MapSeeding-driven scenarioId rotation, ArmaField mod baked into default config, BackendSettings.json stub.",
+    "_comment": "ArmaField MapSeeding-aware Arma Reforger egg (no-RCON variant). Same as the main ArmaField egg but the rcon section is completely absent from config.json - useful when RCON support causes issues or is not wanted at all. Based on pelican-eggs/games-steamcmd Arma Reforger egg by red_thirten.",
     "meta": {
         "version": "PLCN_v2",
         "update_url": null
     },
     "exported_at": "2026-04-19T00:00:00+00:00",
-    "name": "Arma Reforger - ArmaField",
+    "name": "Arma Reforger - ArmaField (no RCON)",
     "author": "contact@armafield.gg",
-    "uuid": "c6a43fc1-9763-4ec4-9338-3e3365af7cd8",
-    "description": "Arma Reforger Dedicated Server with the ArmaField mod and automatic mission rotation via the mod's MapSeeding.json. After each mission the server exits, Wings restarts the container, and our hook reads MapSeeding.json (written by the mod) to pick the next scenarioId before launch.\n\nBackend: defaults point at the public test backend (https://test.armafield.gg). Use the Backend Token and Backend URL panel variables to point at your own self-hosted backend (https://github.com/ArmaField/ArmaField-BackEnd) for production play. URL must be https:// - Arma Reforger rejects plain http.",
+    "uuid": "f1e7b842-3a59-4d6e-9c1b-2d8a4f8e5b62",
+    "description": "Arma Reforger Dedicated Server with the ArmaField mod and automatic mission rotation via the mod's MapSeeding.json. This variant has the rcon section completely omitted from config.json (no rcon block at all, not even empty fields).\n\nBackend: defaults point at the public test backend (https://test.armafield.gg). Use the Backend Token and Backend URL panel variables to point at your own self-hosted backend (https://github.com/ArmaField/ArmaField-BackEnd) for production play. URL must be https:// - Arma Reforger rejects plain http.",
     "tags": [
         "steamcmd",
         "armafield"
@@ -22,14 +22,14 @@
     "file_denylist": [],
     "startup": "sed -i 's/\"true\"/true/g; s/\"false\"/false/g' config.json; bash apply_map_seeding.sh; ./ArmaReforgerServer -gproj ./addons/data/ArmaReforger.gproj -config ./config.json -profile ./profile -backendlog -nothrow -listScenarios -logStats $(({{LOG_INTERVAL}}*1000)) -maxFPS {{MAX_FPS}} -addonTempDir ./tmp",
     "config": {
-        "files": "{\n    \"config.json\": {\n        \"parser\": \"json\",\n        \"find\": {\n            \"bindAddress\": \"0.0.0.0\",\n            \"bindPort\": \"{{server.environment.OVERRIDE_SERVER_PORT}}\",\n            \"publicAddress\": \"{{server.environment.OVERRIDE_SERVER_IP}}\",\n            \"publicPort\": \"{{server.environment.OVERRIDE_SERVER_PORT}}\",\n            \"a2s.address\": \"{{server.environment.A2S_ADDRESS}}\",\n            \"a2s.port\": \"{{server.environment.A2S_PORT}}\",\n            \"rcon.address\": \"{{server.environment.RCON_ADDRESS}}\",\n            \"rcon.port\": \"{{server.environment.RCON_PORT}}\",\n            \"rcon.password\": \"{{server.environment.RCON_PASSWORD}}\",\n            \"rcon.permission\": \"{{server.environment.RCON_PERMISSION}}\",\n            \"game.name\": \"{{server.environment.SERVER_NAME}}\",\n            \"game.password\": \"{{server.environment.SERVER_PASS}}\",\n            \"game.passwordAdmin\": \"{{server.environment.ADMIN_PASS}}\",\n            \"game.scenarioId\": \"{{server.environment.SCENARIO_ID}}\",\n            \"game.maxPlayers\": \"{{server.environment.MAX_PLAYERS}}\",\n            \"game.visible\": \"{{server.environment.VISIBLE}}\",\n            \"game.gameProperties.disableThirdPerson\": \"{{server.environment.DISABLE_THIRD}}\",\n            \"game.gameProperties.fastValidation\": true,\n            \"game.gameProperties.battlEye\": \"{{server.environment.BATTLEYE}}\"\n        }\n    }\n}",
+        "files": "{\n    \"config.json\": {\n        \"parser\": \"json\",\n        \"find\": {\n            \"bindAddress\": \"0.0.0.0\",\n            \"bindPort\": \"{{server.environment.OVERRIDE_SERVER_PORT}}\",\n            \"publicAddress\": \"{{server.environment.OVERRIDE_SERVER_IP}}\",\n            \"publicPort\": \"{{server.environment.OVERRIDE_SERVER_PORT}}\",\n            \"a2s.address\": \"{{server.environment.A2S_ADDRESS}}\",\n            \"a2s.port\": \"{{server.environment.A2S_PORT}}\",\n            \"game.name\": \"{{server.environment.SERVER_NAME}}\",\n            \"game.password\": \"{{server.environment.SERVER_PASS}}\",\n            \"game.passwordAdmin\": \"{{server.environment.ADMIN_PASS}}\",\n            \"game.scenarioId\": \"{{server.environment.SCENARIO_ID}}\",\n            \"game.maxPlayers\": \"{{server.environment.MAX_PLAYERS}}\",\n            \"game.visible\": \"{{server.environment.VISIBLE}}\",\n            \"game.gameProperties.disableThirdPerson\": \"{{server.environment.DISABLE_THIRD}}\",\n            \"game.gameProperties.fastValidation\": true,\n            \"game.gameProperties.battlEye\": \"{{server.environment.BATTLEYE}}\"\n        }\n    }\n}",
         "startup": "{\n    \"done\": \"Starting RPL server\"\n}",
         "logs": "{}",
         "stop": "^C"
     },
     "scripts": {
         "installation": {
-            "script": "#!/bin/bash\n\n## File: ArmaField Pelican Egg installer\n## Based on: pelican-eggs/games-steamcmd/arma/arma_reforger by red_thirten\n## License: MIT\n## Image: ghcr.io/parkervcp/installers:debian\n\nset -e\nexport HOME=/mnt/server\ncd /tmp\nmkdir -p $HOME/steamcmd $HOME/steamapps\ncurl -sSL -o steamcmd.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz\ntar -xzvf steamcmd.tar.gz -C $HOME/steamcmd\ncd $HOME/steamcmd\n\n# Workaround for experimental branch\nif [[ \"${SRCDS_APPID}\" == \"1890870\" ]]; then\n    WINDOWS_INSTALL=\"1\"\nfi\n\nchown -R root:root /mnt\n\n# Install/verify game server\n./steamcmd.sh +force_install_dir $HOME +login anonymous $( [[ \"${WINDOWS_INSTALL}\" == \"1\" ]] && printf %s '+@sSteamCmdForcePlatformType windows' ) +app_update ${SRCDS_APPID} +app_update 1007 $( [[ -z ${SRCDS_BETAID} ]] || printf %s \"-beta ${SRCDS_BETAID}\" ) $( [[ -z ${SRCDS_BETAPASS} ]] || printf %s \"-betapassword ${SRCDS_BETAPASS}\" ) validate +quit\n\nmkdir -p /mnt/server/.steam/sdk{32,64}\ncp -v linux32/steamclient.so /mnt/server/.steam/sdk32/steamclient.so\ncp -v linux64/steamclient.so /mnt/server/.steam/sdk64/steamclient.so\n\nif [[ ! -f \"$HOME/ArmaReforgerServer\" && ! -f \"$HOME/ArmaReforgerServer.exe\" ]]; then\n    echo -e \"\\n\\nSteamCMD failed to install Arma Reforger Dedicated Server!\\n\"\n    exit 1\nfi\n\nmkdir -p $HOME/profile $HOME/tmp\n\n## --- ArmaField additions ---\n\n# Download static jq for the MapSeeding hook (one-shot, ~800 KB).\nif [[ ! -f \"$HOME/jq\" ]]; then\n    echo \"Downloading jq for MapSeeding hook...\"\n    curl -sSL -o $HOME/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64\n    chmod +x $HOME/jq\nfi\n\n# Write the MapSeeding hook script.\ncat > $HOME/apply_map_seeding.sh << 'HOOKEOF'\n#!/usr/bin/env bash\n# Pre-launch hook:\n#   1. (Re)generate BackendSettings.json from BACKEND_TOKEN / BACKEND_URL env vars.\n#   2. Override game.scenarioId in config.json from MapSeeding.json (written by ArmaField mod).\n\npatch_config() {\n    if ./jq \"$@\" config.json > config.json.tmp; then\n        mv config.json.tmp config.json\n        return 0\n    fi\n    rm -f config.json.tmp\n    return 1\n}\n\n# --- 1. BackendSettings.json (always regenerated from env vars) ---\nBACKEND_DIR=\"./profile/profile/ArmaField/Systems\"\nmkdir -p \"$BACKEND_DIR\"\n./jq -n \\\n    --arg token \"${BACKEND_TOKEN}\" \\\n    --arg url \"${BACKEND_URL}\" \\\n    '{ServerToken: $token, BackendURL: $url}' \\\n    > \"$BACKEND_DIR/BackendSettings.json\"\necho \"[ArmaField] BackendSettings.json regenerated (BackendURL=${BACKEND_URL})\"\n\n# --- 2. MapSeeding ---\nSEED=\"$BACKEND_DIR/MapSeeding.json\"\nif [ -f \"$SEED\" ]; then\n    MISSION=$(./jq -r '.MissionResourceName // empty' \"$SEED\" 2>/dev/null)\n    MISSION=\"${MISSION#\"${MISSION%%[![:space:]]*}\"}\"\n    MISSION=\"${MISSION%\"${MISSION##*[![:space:]]}\"}\"\n    case \"$MISSION\" in\n        \\{*\\}*.conf)\n            if patch_config --arg m \"$MISSION\" '.game.scenarioId = $m'; then\n                echo \"[ArmaField] Loaded next mission from MapSeeding.json: $MISSION\"\n            else\n                echo \"[ArmaField] Failed to patch scenarioId - keeping existing value\"\n            fi\n            ;;\n        \"\")\n            echo \"[ArmaField] MapSeeding.json: MissionResourceName missing/empty - using scenarioId from config.json\"\n            ;;\n        *)\n            echo \"[ArmaField] MapSeeding.json: MissionResourceName=$MISSION doesn't look like a scenario resource - ignoring\"\n            ;;\n    esac\nelse\n    echo \"[ArmaField] No MapSeeding.json yet - using scenarioId from config.json\"\nfi\n\nHOOKEOF\nchmod +x $HOME/apply_map_seeding.sh\n\n# Default config.json (with ArmaField mod baked in) - created only if missing.\nif [[ ! -f \"$HOME/config.json\" ]]; then\n    echo \"Creating default config.json with ArmaField mod...\"\n    cat > $HOME/config.json << EOF\n{\n    \"bindAddress\": \"0.0.0.0\",\n    \"bindPort\": ${SERVER_PORT},\n    \"publicAddress\": \"${SERVER_IP}\",\n    \"publicPort\": ${SERVER_PORT},\n    \"a2s\": {\n        \"address\": \"${A2S_ADDRESS}\",\n        \"port\": ${A2S_PORT}\n    },\n    \"rcon\": {\n        \"address\": \"${RCON_ADDRESS}\",\n        \"port\": ${RCON_PORT},\n        \"password\": \"${RCON_PASSWORD}\",\n        \"permission\": \"${RCON_PERMISSION}\",\n        \"blacklist\": [],\n        \"whitelist\": []\n    },\n    \"game\": {\n        \"name\": \"${SERVER_NAME}\",\n        \"password\": \"${SERVER_PASS}\",\n        \"passwordAdmin\": \"${ADMIN_PASS}\",\n        \"admins\": [],\n        \"scenarioId\": \"${SCENARIO_ID}\",\n        \"maxPlayers\": ${MAX_PLAYERS},\n        \"visible\": ${VISIBLE},\n        \"crossPlatform\": false,\n        \"supportedPlatforms\": [\"PLATFORM_PC\"],\n        \"gameProperties\": {\n            \"serverMaxViewDistance\": 2500,\n            \"serverMinGrassDistance\": 50,\n            \"networkViewDistance\": 1000,\n            \"disableThirdPerson\": ${DISABLE_THIRD},\n            \"fastValidation\": true,\n            \"battlEye\": ${BATTLEYE},\n            \"VONDisableUI\": true,\n            \"VONDisableDirectSpeechUI\": true\n        },\n        \"mods\": [\n            {\n                \"modId\": \"68FA258A6C74CE73\",\n                \"name\": \"ArmaField\"\n            }\n        ]\n    },\n    \"operating\": {\n        \"lobbyPlayerSynchronise\": true,\n        \"joinQueue\": {\n            \"maxSize\": 50\n        },\n        \"disableNavmeshStreaming\": [\"Soldiers\"]\n    }\n}\nEOF\nfi\n\n# BackendSettings.json is generated by apply_map_seeding.sh on every server\n# start (regenerated fresh from BACKEND_TOKEN / BACKEND_URL env vars), so we\n# only need to ensure the directory exists at install time.\nmkdir -p $HOME/profile/profile/ArmaField/Systems\n\necho -e \"\\n\\nArmaField Reforger server installed.\"\necho \"Backend: defaults to public test backend (https://test.armafield.gg).\"\necho \"For production, set Backend Token and Backend URL in the panel variables.\\n\"",
+            "script": "#!/bin/bash\n\n## File: ArmaField Pelican Egg installer (no-RCON variant)\n## Based on: pelican-eggs/games-steamcmd/arma/arma_reforger by red_thirten\n## License: MIT\n## Image: ghcr.io/parkervcp/installers:debian\n\nset -e\nexport HOME=/mnt/server\ncd /tmp\nmkdir -p $HOME/steamcmd $HOME/steamapps\ncurl -sSL -o steamcmd.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz\ntar -xzvf steamcmd.tar.gz -C $HOME/steamcmd\ncd $HOME/steamcmd\n\n# Workaround for experimental branch\nif [[ \"${SRCDS_APPID}\" == \"1890870\" ]]; then\n    WINDOWS_INSTALL=\"1\"\nfi\n\nchown -R root:root /mnt\n\n# Install/verify game server\n./steamcmd.sh +force_install_dir $HOME +login anonymous $( [[ \"${WINDOWS_INSTALL}\" == \"1\" ]] && printf %s '+@sSteamCmdForcePlatformType windows' ) +app_update ${SRCDS_APPID} +app_update 1007 $( [[ -z ${SRCDS_BETAID} ]] || printf %s \"-beta ${SRCDS_BETAID}\" ) $( [[ -z ${SRCDS_BETAPASS} ]] || printf %s \"-betapassword ${SRCDS_BETAPASS}\" ) validate +quit\n\nmkdir -p /mnt/server/.steam/sdk{32,64}\ncp -v linux32/steamclient.so /mnt/server/.steam/sdk32/steamclient.so\ncp -v linux64/steamclient.so /mnt/server/.steam/sdk64/steamclient.so\n\nif [[ ! -f \"$HOME/ArmaReforgerServer\" && ! -f \"$HOME/ArmaReforgerServer.exe\" ]]; then\n    echo -e \"\\n\\nSteamCMD failed to install Arma Reforger Dedicated Server!\\n\"\n    exit 1\nfi\n\nmkdir -p $HOME/profile $HOME/tmp\n\n## --- ArmaField additions ---\n\n# Download static jq for the MapSeeding hook (one-shot, ~800 KB).\nif [[ ! -f \"$HOME/jq\" ]]; then\n    echo \"Downloading jq for MapSeeding hook...\"\n    curl -sSL -o $HOME/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64\n    chmod +x $HOME/jq\nfi\n\n# Write the MapSeeding hook script.\ncat > $HOME/apply_map_seeding.sh << 'HOOKEOF'\n#!/usr/bin/env bash\n# Pre-launch hook:\n#   1. (Re)generate BackendSettings.json from BACKEND_TOKEN / BACKEND_URL env vars.\n#   2. Override game.scenarioId in config.json from MapSeeding.json (written by ArmaField mod).\n\npatch_config() {\n    if ./jq \"$@\" config.json > config.json.tmp; then\n        mv config.json.tmp config.json\n        return 0\n    fi\n    rm -f config.json.tmp\n    return 1\n}\n\n# --- 1. BackendSettings.json (always regenerated from env vars) ---\nBACKEND_DIR=\"./profile/profile/ArmaField/Systems\"\nmkdir -p \"$BACKEND_DIR\"\n./jq -n \\\n    --arg token \"${BACKEND_TOKEN}\" \\\n    --arg url \"${BACKEND_URL}\" \\\n    '{ServerToken: $token, BackendURL: $url}' \\\n    > \"$BACKEND_DIR/BackendSettings.json\"\necho \"[ArmaField] BackendSettings.json regenerated (BackendURL=${BACKEND_URL})\"\n\n# --- 2. MapSeeding ---\nSEED=\"$BACKEND_DIR/MapSeeding.json\"\nif [ -f \"$SEED\" ]; then\n    MISSION=$(./jq -r '.MissionResourceName // empty' \"$SEED\" 2>/dev/null)\n    MISSION=\"${MISSION#\"${MISSION%%[![:space:]]*}\"}\"\n    MISSION=\"${MISSION%\"${MISSION##*[![:space:]]}\"}\"\n    case \"$MISSION\" in\n        \\{*\\}*.conf)\n            if patch_config --arg m \"$MISSION\" '.game.scenarioId = $m'; then\n                echo \"[ArmaField] Loaded next mission from MapSeeding.json: $MISSION\"\n            else\n                echo \"[ArmaField] Failed to patch scenarioId - keeping existing value\"\n            fi\n            ;;\n        \"\")\n            echo \"[ArmaField] MapSeeding.json: MissionResourceName missing/empty - using scenarioId from config.json\"\n            ;;\n        *)\n            echo \"[ArmaField] MapSeeding.json: MissionResourceName=$MISSION doesn't look like a scenario resource - ignoring\"\n            ;;\n    esac\nelse\n    echo \"[ArmaField] No MapSeeding.json yet - using scenarioId from config.json\"\nfi\n\nHOOKEOF\nchmod +x $HOME/apply_map_seeding.sh\n\n# Default config.json (with ArmaField mod baked in, NO rcon section) - created only if missing.\nif [[ ! -f \"$HOME/config.json\" ]]; then\n    echo \"Creating default config.json with ArmaField mod (no RCON)...\"\n    cat > $HOME/config.json << EOF\n{\n    \"bindAddress\": \"0.0.0.0\",\n    \"bindPort\": ${SERVER_PORT},\n    \"publicAddress\": \"${SERVER_IP}\",\n    \"publicPort\": ${SERVER_PORT},\n    \"a2s\": {\n        \"address\": \"${A2S_ADDRESS}\",\n        \"port\": ${A2S_PORT}\n    },\n    \"game\": {\n        \"name\": \"${SERVER_NAME}\",\n        \"password\": \"${SERVER_PASS}\",\n        \"passwordAdmin\": \"${ADMIN_PASS}\",\n        \"admins\": [],\n        \"scenarioId\": \"${SCENARIO_ID}\",\n        \"maxPlayers\": ${MAX_PLAYERS},\n        \"visible\": ${VISIBLE},\n        \"crossPlatform\": false,\n        \"supportedPlatforms\": [\"PLATFORM_PC\"],\n        \"gameProperties\": {\n            \"serverMaxViewDistance\": 2500,\n            \"serverMinGrassDistance\": 50,\n            \"networkViewDistance\": 1000,\n            \"disableThirdPerson\": ${DISABLE_THIRD},\n            \"fastValidation\": true,\n            \"battlEye\": ${BATTLEYE},\n            \"VONDisableUI\": true,\n            \"VONDisableDirectSpeechUI\": true\n        },\n        \"mods\": [\n            {\n                \"modId\": \"68FA258A6C74CE73\",\n                \"name\": \"ArmaField\"\n            }\n        ]\n    },\n    \"operating\": {\n        \"lobbyPlayerSynchronise\": true,\n        \"joinQueue\": {\n            \"maxSize\": 50\n        },\n        \"disableNavmeshStreaming\": [\"Soldiers\"]\n    }\n}\nEOF\nfi\n\n# BackendSettings.json is generated by apply_map_seeding.sh on every server\n# start (regenerated fresh from BACKEND_TOKEN / BACKEND_URL env vars), so we\n# only need to ensure the directory exists at install time.\nmkdir -p $HOME/profile/profile/ArmaField/Systems\n\necho -e \"\\n\\nArmaField Reforger server (no-RCON) installed.\"\necho \"Backend: defaults to public test backend (https://test.armafield.gg).\"\necho \"For production, set Backend Token and Backend URL in the panel variables.\\n\"",
             "container": "ghcr.io/parkervcp/installers:debian",
             "entrypoint": "/bin/bash"
         }
@@ -254,64 +254,6 @@
                 "between:1,65535"
             ],
             "sort": 18
-        },
-        {
-            "name": "RCON Address",
-            "description": "IP address the RCON socket binds to. Use 0.0.0.0 to listen on all interfaces (recommended for Docker / containerised setups). Set to a specific IP only if you need to restrict RCON to one network interface.",
-            "env_variable": "RCON_ADDRESS",
-            "default_value": "0.0.0.0",
-            "user_viewable": true,
-            "user_editable": true,
-            "rules": [
-                "required",
-                "string",
-                "max:255"
-            ],
-            "sort": 19
-        },
-        {
-            "name": "RCON Port",
-            "description": "RCON UDP port. Allocate this port in the panel before starting if you use RCON.",
-            "env_variable": "RCON_PORT",
-            "default_value": "19999",
-            "user_viewable": true,
-            "user_editable": true,
-            "rules": [
-                "required",
-                "integer",
-                "between:1,65535"
-            ],
-            "sort": 20
-        },
-        {
-            "name": "RCON Password",
-            "description": "Password for RCON access. Must be at least 3 characters and contain no spaces. Empty disables RCON.",
-            "env_variable": "RCON_PASSWORD",
-            "default_value": "",
-            "user_viewable": true,
-            "user_editable": true,
-            "rules": [
-                "nullable",
-                "string",
-                "min:3",
-                "max:128",
-                "regex:/^\\S+$/"
-            ],
-            "sort": 21
-        },
-        {
-            "name": "RCON Permission",
-            "description": "Permission level for RCON clients. 'admin' can do anything; 'monitor' is read-only.",
-            "env_variable": "RCON_PERMISSION",
-            "default_value": "admin",
-            "user_viewable": true,
-            "user_editable": true,
-            "rules": [
-                "required",
-                "string",
-                "in:admin,monitor"
-            ],
-            "sort": 22
         },
         {
             "name": "ArmaField Backend URL",
